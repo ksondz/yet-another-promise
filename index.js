@@ -176,36 +176,6 @@ module.exports = class Yap {
   }
 
   /**
-   * @param executor
-   * @param onResolve
-   * @param onReject
-   * @private
-   */
-  __doResolve(executor, onResolve, onReject) {
-    let done = false;
-    try {
-      executor(
-        value => {
-          if (done) return;
-          done = true;
-          onResolve(value);
-        },
-        reason => {
-          if (done) return;
-          done = true;
-          onReject(reason);
-        },
-      );
-    } catch (error) {
-      if (done) return;
-      done = true;
-      onReject(error);
-    }
-
-    return this;
-  }
-
-  /**
    * @param onResolve
    * @param onReject
    * @returns {module.Yap}
@@ -239,6 +209,14 @@ module.exports = class Yap {
   }
 
   /**
+   * @param onReject
+   * @returns {module.Yap}
+   */
+  catch(onReject) {
+    return Yap.isFunction(onReject) ? this.then(undefined, onReject) : this;
+  }
+
+  /**
    * @param onFinally
    * @returns {module.Yap}
    */
@@ -268,11 +246,33 @@ module.exports = class Yap {
   }
 
   /**
+   * @param executor
+   * @param onResolve
    * @param onReject
-   * @returns {module.Yap}
+   * @private
    */
-  catch(onReject) {
-    return Yap.isFunction(onReject) ? this.then(undefined, onReject) : this;
+  __doResolve(executor, onResolve, onReject) {
+    let done = false;
+    try {
+      executor(
+        value => {
+          if (done) return;
+          done = true;
+          onResolve(value);
+        },
+        reason => {
+          if (done) return;
+          done = true;
+          onReject(reason);
+        },
+      );
+    } catch (error) {
+      if (done) return;
+      done = true;
+      onReject(error);
+    }
+
+    return this;
   }
 
   /**
