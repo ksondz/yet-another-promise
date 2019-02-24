@@ -36,7 +36,7 @@ module.exports = class Yap {
    * @returns {boolean}
    */
   static isObject(arg) {
-    return typeof arg === "object";
+    return typeof arg === 'object';
   }
 
   /**
@@ -44,7 +44,7 @@ module.exports = class Yap {
    * @returns {boolean}
    */
   static isString(arg) {
-    return typeof arg === "string";
+    return typeof arg === 'string';
   }
 
   /**
@@ -52,7 +52,7 @@ module.exports = class Yap {
    * @returns {boolean}
    */
   static isFunction(arg) {
-    return typeof arg === "function";
+    return typeof arg === 'function';
   }
 
   /**
@@ -77,30 +77,30 @@ module.exports = class Yap {
       if (Yap.isString(iterable)) {
         const promises = [];
 
-        for (let value of iterable) {
-          promises.push(Yap.resolve(value))
-        }
+        Object.values(iterable).forEach(value => {
+          promises.push(Yap.resolve(value));
+        });
 
         Yap.all(promises).then(
           resolveResults => {
-            resolve(resolveResults)
+            resolve(resolveResults);
           },
           rejectReason => {
-            reject(rejectReason)
+            reject(rejectReason);
           },
         );
       } else {
         const results = [];
-        for (let promise of iterable) {
+        Object.values(iterable).forEach(promise => {
           try {
             promise.then(result => {
               results.push(result);
               if (results.length === iterable.length) return resolve(results);
-            }).catch(reject)
+            }).catch(reject);
           } catch (e) {
             throw new Error(`UnhandledPromiseRejectionWarning: ${e}`);
           }
-        }
+        });
       }
     });
   }
@@ -114,19 +114,19 @@ module.exports = class Yap {
 
       if (Yap.isString(iterable)) {
         Yap.resolve(iterable[0]).then(
-          resolveResults => { resolve(resolveResults) },
-          rejectReason => { reject(rejectReason) }
+          resolveResults => { resolve(resolveResults); },
+          rejectReason => { reject(rejectReason); },
         );
       } else {
-        for (let promise of iterable) {
+        Object.values(iterable).forEach(promise => {
           try {
             promise.then(result => {
               resolve(result);
-            }).catch(reject)
+            }).catch(reject);
           } catch (e) {
             throw new Error(`UnhandledPromiseRejectionWarning: ${e}`);
           }
-        }
+        });
       }
     });
   }
@@ -158,7 +158,7 @@ module.exports = class Yap {
         }
 
       } catch (error) {
-        reject(error)
+        reject(error);
       }
     });
   }
@@ -172,7 +172,7 @@ module.exports = class Yap {
     this.state = Yap.PENDING_STATE;
     this.handlers = [];
 
-    this.__doResolve(executor, this.__resolve.bind(this), this.__reject.bind(this))
+    this.__doResolve(executor, this.__resolve.bind(this), this.__reject.bind(this));
   }
 
   /**
@@ -193,14 +193,16 @@ module.exports = class Yap {
         reason => {
           if (done) return;
           done = true;
-          onReject(reason)
-        }
-      )
+          onReject(reason);
+        },
+      );
     } catch (error) {
       if (done) return;
       done = true;
       onReject(error);
     }
+
+    return this;
   }
 
   /**
@@ -300,6 +302,7 @@ module.exports = class Yap {
       case ((this.state === Yap.REJECTED_STATE) && Yap.isFunction(handler.onReject)):
         handler.onReject(this.value);
         break;
+      default:
     }
   }
 
@@ -313,7 +316,7 @@ module.exports = class Yap {
 
       if (then) {
         this.__doResolve(then.bind(result), this.__resolve, this.__reject);
-        return
+        return;
       }
 
       this.state = Yap.RESOLVED_STATE;
