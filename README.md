@@ -1,8 +1,8 @@
 # Yet Another Promise
 
-This class mimics native JavaScript standard built-in Promise object. <br>
-
-Implemented methods: (**then**, **catch**, **finally**, **race**, **all**, **resolve**, **reject**)
+- This class mimics native JavaScript standard built-in Promise object. <br>
+- Implemented methods: (**then**, **catch**, **finally**, **race**, **all**, **resolve**, **reject**) <br>
+- It is compatible with NodeJS v8.10.0
 
 ## Installation
 
