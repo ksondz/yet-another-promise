@@ -10,6 +10,12 @@ Implemented methods: (**then**, **catch**, **finally**, **race**, **all**, **res
 $ npm install https://github.com/ksondz/yet-another-promise.git
 ```
 
+## Run unit tests
+
+```
+$ npm run test
+```
+
 ## Usage Guide
 
  - Create new promise. 

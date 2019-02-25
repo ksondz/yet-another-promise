@@ -170,7 +170,7 @@ module.exports = class Yap {
   constructor(executor) {
     this.value = null;
     this.state = Yap.PENDING_STATE;
-    this.handlers = [];
+    this.__handlers = [];
 
     this.__doResolve(executor, this.__resolve.bind(this), this.__reject.bind(this));
   }
@@ -293,7 +293,7 @@ module.exports = class Yap {
   __handle(handler) {
     switch (true) {
       case (this.state === Yap.PENDING_STATE):
-        this.handlers.push(handler);
+        this.__handlers.push(handler);
         break;
       case ((this.state === Yap.RESOLVED_STATE) && Yap.isFunction(handler.onResolve)):
         handler.onResolve(this.value);
@@ -315,14 +315,14 @@ module.exports = class Yap {
       const then = Yap.getThenable(result);
 
       if (then) {
-        this.__doResolve(then.bind(result), this.__resolve, this.__reject);
+        this.__doResolve(then.bind(result), this.__resolve.bind(this), this.__reject.bind(this));
         return;
       }
 
       this.state = Yap.RESOLVED_STATE;
       this.value = result;
-      this.handlers.forEach(this.__handle.bind(this));
-      this.handlers = null;
+      this.__handlers.forEach(this.__handle.bind(this));
+      this.__handlers = null;
 
     } catch (error) {
       return this.__reject(error);
@@ -337,7 +337,7 @@ module.exports = class Yap {
     this.state = Yap.REJECTED_STATE;
     this.value = error;
 
-    this.handlers.forEach(this.__handle.bind(this));
-    this.handlers = null;
+    this.__handlers.forEach(this.__handle.bind(this));
+    this.__handlers = null;
   }
 };
