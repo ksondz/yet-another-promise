@@ -281,9 +281,9 @@ module.exports = class Yap {
    * @private
    */
   __done(onResolve, onReject) {
-    setTimeout(() => {
+    process.nextTick(() => {
       this.__handle({ onResolve, onReject });
-    }, 0);
+    });
   }
 
   /**
